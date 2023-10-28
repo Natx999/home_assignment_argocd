@@ -8,11 +8,11 @@ main () {
         argocd_setup)
             argocd_setup
             ;;
-        run_test)
-            run_test
+        n)
+            echo "aaa"
             ;;
         *)
-            echo -n "Incorrect or no flag found"
+            echo $1
     esac
 }
 
@@ -57,9 +57,11 @@ cluster_setup () {
 }
 
 argocd_setup () {
-    kubectl create namespace argocd
-    kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/core-install.yaml
-    kubectl patch svc argocd-server -n argocd --type='json' -p '[{"op":"replace","path":"/spec/type","value":"NodePort"},{"op":"replace","path":"/spec/ports/0/nodePort","value":30040}]'
+    kubectl create namespace argocd && kubectl create namespace wordpress
+    kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+    kubectl patch svc argocd-server -n argocd --patch '{"spec": { "type": "NodePort", "ports": [ { "nodePort": 30040, "port": 80, "protocol": "TCP", "targetPort": 8080 } ] } }'
+    kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisioner/master/deploy/local-path-storage.yaml
+    kubectl patch storageclass local-path -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
 }
 
-main
+main $@
