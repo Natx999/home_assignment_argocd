@@ -2,18 +2,18 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: wordpress
-  namespace: wordpress
 spec:
-  project: default
-  source:
-    repoURL: https://github.com/Natx999/home_assignment_argocd.git
-    targetRevision: HEAD
-    path: wordpress
   destination:
-    server: https://kubernetes.default.svc
+    name: ''
     namespace: wordpress
-  syncPolicy: 
-    syncOptions:
-    - CreateNamespace=true
+    server: 'https://kubernetes.default.svc'
+  source:
+    path: wordpress
+    repoURL: 'https://github.com/Natx999/home_assignment_argocd.git'
+    targetRevision: HEAD
+  sources: []
+  project: default
+  syncPolicy:
     automated:
+      prune: true
       selfHeal: true
