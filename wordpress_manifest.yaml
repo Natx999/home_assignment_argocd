@@ -11,6 +11,9 @@ spec:
     path: wordpress
     repoURL: 'https://github.com/Natx999/home_assignment_argocd.git'
     targetRevision: HEAD
+    helm:
+    valueFiles:
+      - values.yaml
   sources: []
   project: default
   syncPolicy:
