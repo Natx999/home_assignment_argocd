@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Values.mySql.metadata.name }}
+  labels:
+    app: {{ .Values.mySql.metadata.labels.app }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Values.mySql.metadata.labels.app }}
+      tier: {{ .Values.mySql.metadata.labels.tier }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.mySql.metadata.labels.app }}
+        tier: {{ .Values.mySql.metadata.labels.tier }}
+    spec:
+      containers:
+      - image: "{{ .Values.mySql.spec.containers.image }}:{{ .Values.mySql.spec.containers.imageTag }}"
+        name: {{ .Values.mySql.spec.containers.name }}
+        env:
+        - name: {{ .Values.mySql.spec.containers.env.mysqlRootPassword }}
+          value: {{ .Values.mySql.spec.containers.env.mysqlRootPasswordValue }}
+        - name: {{ .Values.mySql.spec.containers.env.mysqlName }}
+          value: {{ .Values.mySql.spec.containers.env.mysqlNameValue }}
+        - name: {{ .Values.mySql.spec.containers.env.mysqlUser }}
+          value: {{ .Values.mySql.spec.containers.env.mysqlUserValue }}
+        - name: {{ .Values.mySql.spec.containers.env.mysqlPassword }}
+          value: {{ .Values.mySql.spec.containers.env.mysqlPasswordValue }}
+        ports:
+        - containerPort: {{ .Values.mySql.spec.containers.ports.containerPort }}
+          name: {{ .Values.mySql.spec.containers.ports.name }}
+        volumeMounts:
+        - name: {{ .Values.mySql.spec.containers.volumeMounts.name }}
+          mountPath: {{ .Values.mySql.spec.containers.volumeMounts.mountPath }}
+      volumes:
+      - name: {{ .Values.mySql.spec.volumes.name }} mysql-persistent-storage
+        persistentVolumeClaim:
+          claimName: {{ .Values.mySql.spec.volumes.persistentVolumeClaimName }}

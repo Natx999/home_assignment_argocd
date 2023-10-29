@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.wordpress.metadata.name }}
+  labels:
+    app: {{ .Values.wordpress.metadata.labels.app }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Values.wordpress.metadata.labels.app }}
+      tier: {{ .Values.wordpress.metadata.labels.tier }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.wordpress.metadata.labels.app }}
+        tier: {{ .Values.wordpress.metadata.labels.tier }}
+    spec:
+      containers:
+      - image: "{{ .Values.wordpress.spec.containers.image }}:{{ .Values.wordpress.spec.containers.imageTag }}"
+        name: {{ .Values.wordpress.metadata.name }}
+        env:
+        - name: {{ .Values.wordpress.spec.containers.env.dbHostName }}
+          value: {{ .Values.wordpress.spec.containers.env.dbHostNameValue }}
+        - name: {{ .Values.wordpress.spec.containers.env.dbPassword }}
+          value: {{ .Values.wordpress.spec.containers.env.dbPasswordValue }} # Usually will be generated with a secret manager i.e. Vault/AWS Secrets Manager
+        - name: {{ .Values.wordpress.spec.containers.env.dbUser }}
+          value: {{ .Values.wordpress.spec.containers.env.dbUserValue }}
+        ports:
+        - containerPort: {{ .Values.wordpress.spec.containers.ports.containerPort }}
+          name: {{ .Values.wordpress.spec.containers.ports.name }}
+        volumeMounts:
+        - name: {{ .Values.wordpress.spec.containers.volumeMounts.name }}
+          mountPath: {{ .Values.wordpress.spec.containers.volumeMounts.mountPath }}
+      volumes:
+      - name: {{ .Values.wordpress.spec.volumes.name }}
+        persistentVolumeClaim:
+          claimName: {{ .Values.wordpress.spec.volumes.persistentVolumeClaimName }}

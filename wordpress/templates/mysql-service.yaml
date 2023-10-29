@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.mySql.metadata.name }}
+  labels:
+    app: {{ .Values.mySql.metadata.labels.app }}
+spec:
+  ports:
+    - port: {{ .Values.mySql.spec.containers.ports.containerPort }}
+  selector:
+    app: {{ .Values.mySql.metadata.labels.app }}
+    tier: {{ .Values.mySql.metadata.labels.tier }}
+  clusterIP: None

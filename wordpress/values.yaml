@@ -1,0 +1,66 @@
+wordpress:
+  metadata:
+    name: wordpress
+    labels:
+      app: wordpress
+      tier: frontend
+  spec: 
+    containers:
+      image: wordpress
+      imageTag: 6.2.1-apache
+      env:
+        dbHostName: WORDPRESS_DB_HOST
+        dbHostNameValue: wordpress-mysql
+        dbPassword: WORDPRESS_DB_PASSWORD
+        dbPasswordValue: secret_password # Usually will be generated with a secret manager i.e. Vault/AWS Secrets Manager
+        dbUser: WORDPRESS_DB_USER
+        dbUserValue: wordpress
+      serviceType: NodePort
+      ports:
+        containerPort: 80
+        nodePort: 30007
+        name: wordpress
+      volumeMounts:
+        name: wordpress-persistent-storage
+        mountPath: /var/www/html
+    volumes:
+      name: wordpress-persistent-storage
+      persistentVolumeClaimName: wp-pv-claim
+      resource:
+        requests:
+          storage: 20Gi
+
+mySql:
+  metadata:
+    name: wordpress-mysql
+    labels:
+      app: wordpress
+      tier: mysql
+  spec:
+    containers:
+      image: mysql
+      imageTag: "8.0"
+      name: mysql
+      env:
+        mysqlRootPassword: MYSQL_ROOT_PASSWORD
+        mysqlRootPasswordValue: secret_password # Usually will be generated with a secret manager i.e. Vault/AWS Secrets Manager
+        mysqlName: MYSQL_DATABASE
+        mysqlNameValue: wordpress
+        mysqlUser: MYSQL_USER
+        mysqlUserValue: wordpress
+        mysqlPassword: MYSQL_PASSWORD
+        mysqlPasswordValue: secret_password # Usually will be generated with a secret manager i.e. Vault/AWS Secrets Manager
+      ports:
+        containerPort: 3306
+        name: mysql
+      volumeMounts:
+        name: mysql-persistent-storage
+        mountPath: /var/lib/mysql
+    volumes:
+      name: mysql-persistent-storage
+      persistentVolumeClaimName: mysql-pv-claim
+      resource:
+        requests:
+          storage: 20Gi
+  
+

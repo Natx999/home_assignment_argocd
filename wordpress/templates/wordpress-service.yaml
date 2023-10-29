@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.wordpress.metadata.name }}
+  labels:
+    app: {{ .Values.wordpress.metadata.labels.app }}
+spec:
+  ports:
+    - port: {{ .Values.wordpress.spec.containers.ports.containerPort }}
+      nodePort: {{ .Values.wordpress.spec.containers.ports.nodePort }}
+  selector:
+    app: {{ .Values.wordpress.metadata.labels.app }}
+    tier: {{ .Values.wordpress.metadata.labels.tier }}
+  type: {{ .Values.wordpress.spec.containers.serviceType }}
